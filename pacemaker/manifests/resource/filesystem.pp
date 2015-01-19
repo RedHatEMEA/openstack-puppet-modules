@@ -6,13 +6,12 @@ define pacemaker::resource::filesystem($device,
                                        $clone=false,
                                        $interval='30s',
                                        $monitor_params=undef,
-                                       $ensure='present',
-                                       $extra_options=undef) {
+                                       $ensure='present') {
   $resource_id = delete("fs-${directory}", '/')
 
   $resource_params = $fsoptions ? {
-    ''      => "device=${device} directory=${directory} fstype=${fstype} $extra_options",
-    default => "device=${device} directory=${directory} fstype=${fstype} options=\"${fsoptions}\" $extra_options",
+    ''      => "device=${device} directory=${directory} fstype=${fstype}",
+    default => "device=${device} directory=${directory} fstype=${fstype} options=\"${fsoptions}\"",
   }
 
   pcmk_resource { $resource_id:
