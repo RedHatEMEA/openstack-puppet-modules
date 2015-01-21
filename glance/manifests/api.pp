@@ -92,6 +92,10 @@
 #   (optional) User to authenticate as with keystone.
 #   Defaults to 'glance'.
 #
+# [*manage_service*]
+#   (optional) Whether the glance module manages the service
+#   Defaults to true.
+
 # [*enabled*]
 #   (optional) Whether to enable services.
 #   Defaults to true.
@@ -167,6 +171,7 @@ class glance::api(
   $pipeline              = 'keystone+cachemanagement',
   $keystone_tenant       = 'services',
   $keystone_user         = 'glance',
+  $manage_service        = true,
   $enabled               = true,
   $sql_idle_timeout      = '3600',
   $sql_connection        = 'sqlite:///var/lib/glance/glance.sqlite',
@@ -393,12 +398,14 @@ class glance::api(
           '/etc/glance/glance-cache.conf']:
   }
 
-  if $enabled {
-    $service_ensure = 'running'
-  } else {
-    $service_ensure = 'stopped'
+  if $manage_service {
+    if $enabled {
+      $service_ensure = 'running'
+    } else {
+      $service_ensure = 'stopped'
+    }
   }
-
+  
   service { 'glance-api':
     ensure     => $service_ensure,
     name       => $::glance::params::api_service_name,
